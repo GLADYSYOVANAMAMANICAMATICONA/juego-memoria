@@ -11,42 +11,68 @@
 </head>
 <body>
 	<h1>JUEGO DE MEMORIA</h1>
-	<ul id="contenedor"></ul>
 
 <script type="text/javascript">
-//////////////JQUERY///////////////////////
-$(document).ready(function(){
-	var array_imagenes = ["A","A","B","B","C","C","D","D"];
-	array_imagenes.sort(function(){return 0.5 - Math.random()});//ordena los elemenos de un array....Math.random();.... Devuelve un número aleatorio entre 0 (incluido) y 1 (exclusivo)
-	var _html = '';
-	var tmp = [];
-	var result = 0;
-	var i = 1;
-	$.each(array_imagenes,function(key,value){//La $.each()función recupera internamente....El método each () especifica una función a ejecutar para cada elemento coincidente.
-		_html += '<li><span calss="value">'+value+'</span><span class="overlay"></apan></li>';
-	});
-	$('#contenedor').html(_html);// .html---->Cambiar el contenido de todos los elementos #contenedor
-	
-	$('#contenedor li').click(function(){
-		if(!$(this).hasClass('.ok') && !$(this).hasClass('.selected'))//----->hasClass...Compruebe si algún elemento <> tiene una clase llamada".ok" ".selected":
-		if(i>2){
-			$('.selected').removeClass('.selected');//--->Elimine el nombre de clase "intro" de todos los elementos <.select>:
-			i =	1;
-			tmp = [];
-		}
-		//agrega la clase
-		$(this).addClass('selected');
-		tmp.push($(this).find('.value').text());//push--->Agregar un nuevo elemento al array... find---->Devuelve todos los elementos <.value> que son descendientes de <ul>:  text----->Establecer contenido de texto para todos los elementos <.value>:
-		if(tmp.length == 2 && tmp[0] == tmp[1]){
-			$('.selected').addClass('ok');
-			$('h1 span').html(++result);
-		}
-		i++;
-	});
-});
-</script>
-		<!-- Enlaza tu JS aquí -->
 
-	<!-- <script src="js/app.js" charset="utf-8"></script> -->
-</body>
+$(document).ready(function() {
+  var app = {
+    cards: [1, 1, 2, 2, 3, 3],
+    init: function() {
+      app.posiciones();
+    },
+    posiciones: function() {
+      var random = 0;
+      var temp = 0;
+      for (i = 1; i < app.cards.length; i++) {
+        random = Math.round(Math.random() * i);
+        temp = app.cards[i];
+        app.cards[i] = app.cards[random];
+        app.cards[random] = temp;
+      }
+      app.asignar();
+    },
+    asignar: function() {
+      $('.card').each(function(index) {
+        $(this).attr('data-card-value', app.cards[index]);
+      });
+      app.cuandoclikee();
+    },
+    cuandoclikee: function() {
+      $('.card').on('click', function() {
+        $(this).html('<p>' + $(this).data('cardValue') + '</p>').addClass('selected');
+        app.evalua();
+      });
+    },
+    evalua: function() {
+      if ($('.selected').length === 2) {
+        if ($('.selected').first().data('cardValue') == $('.selected').last().data('cardValue')) {
+          $('.selected').each(function() {
+						$(this).animate({
+							opacity: 0}).removeClass('unmatched');
+          });
+          $('.selected').each(function() {
+            $(this).removeClass('selected');
+          });
+        } else {
+          setTimeout(function() {
+            $('.selected').each(function() {
+              $(this).html('').removeClass('selected');
+            });
+          }, 1000);
+        }
+      }
+    },
+  };
+  app.init();
+});
+
+</script>
+<div class="container">
+    <div class="card unmatched"></div>
+    <div class="card unmatched"></div>
+    <div class="card unmatched"></div>
+    <div class="card unmatched"></div>
+    <div class="card unmatched"></div>
+    <div class="card unmatched"></div>
+  </div></body>
 </html>
